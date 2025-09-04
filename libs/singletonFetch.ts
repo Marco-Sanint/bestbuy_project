@@ -11,6 +11,6 @@ export const apiFetch = async (endpoint: string, method: methods, body?: any) =>
   }
   if (method === 'POST' || method === 'PUT') headerOptions.body = JSON.stringify(body)
   
-  return fetch(`${API_URL}${endpoint}`, headerOptions)
+  return await fetch(`${API_URL}${endpoint}`, headerOptions)
         .then(data => data.json())
 }
