@@ -3,7 +3,7 @@ import { useForm, SubmitHandler } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { FaApple } from "react-icons/fa"
 import { FcGoogle } from "react-icons/fc"
-
+import Cookies from "js-cookie"
 import { LoginDTO } from "../../interfaces/login"
 import { loginScheme } from "../../schemas/login"
 import { loginService } from "../../libs/authService"
@@ -20,7 +20,9 @@ export default function LoginComponent() {
   const onSubmit: SubmitHandler<LoginDTO> = (data) => {
     loginService(data)
       .then((info) => {
-        localStorage.setItem('token', info.access_token)
+        Cookies.set('jwt_token', info.access_token, { expires: 7, secure: true, sameSite: 'strict' })
+        console.log('Token almacenado en la cookie:', Cookies.get('jwt_token'))
+        alert('¡Login exitoso! Token guardado en la cookie.')
       })
       .catch(() => {
         console.error('Error en solicitud');
