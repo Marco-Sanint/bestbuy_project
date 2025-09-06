@@ -1,21 +1,17 @@
 'use client'
-import { useForm, SubmitHandler } from "react-hook-form"
+
+import InputComponent from '../../components/atoms/InputComponent';
+import { useForm, SubmitHandler, FormProvider } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { FaApple } from "react-icons/fa"
-import { FcGoogle } from "react-icons/fc"
 import Cookies from "js-cookie"
 import { LoginDTO } from "../../interfaces/login"
 import { loginScheme } from "../../schemas/login"
 import { loginService } from "../../libs/authService"
 
 export default function LoginComponent() {
-  const { 
-    register, 
-    handleSubmit,
-    formState: { errors }
-  } = useForm<LoginDTO>({
-    resolver: zodResolver(loginScheme)
-  })
+  const methods = useForm<LoginDTO>({
+    resolver: zodResolver(loginScheme),
+  });
   
   const onSubmit: SubmitHandler<LoginDTO> = (data) => {
     loginService(data)
@@ -30,44 +26,44 @@ export default function LoginComponent() {
   }
 
   const onErrors = () => {
-    console.log('Errores', errors);
+    console.log('Errores', methods.formState.errors);
     alert('Información incompleta')
   };
 
-    return (
-    <form onSubmit={handleSubmit(onSubmit, onErrors)} className="space-y-4">
-      {/* Email */}
-      <div>
-        <input
-          {...register("user")}
-          type="text"
-          placeholder="Email Address"
-          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        {errors.user && (
-          <p className="text-red-500 text-sm mt-1">{errors.user.message}</p>
-        )}
-      </div>
+  return (
+    <FormProvider {...methods}>
+      <form onSubmit={methods.handleSubmit(onSubmit, onErrors)} className="space-y-4">
+        <div>
+          <InputComponent
+            label="Email Address"
+            idElement="email"
+            nameRegister="user"
+            typeElement="email"
+          />
+          {methods.formState.errors.user && (
+            <p className="text-red-500 text-sm mt-1">{methods.formState.errors.user.message}</p>
+          )}
+        </div>
 
-      {/* Contraseña */}
-      <div>
-        <input
-          {...register("password")}
-          type="password"
-          placeholder="Password"
-          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        {errors.password && (
-          <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
-        )}
-      </div>
+        <div>
+          <InputComponent
+            label="Password"
+            idElement="password"
+            nameRegister="password"
+            typeElement="password"
+          />
+          {methods.formState.errors.password && (
+            <p className="text-red-500 text-sm mt-1">{methods.formState.errors.password.message}</p>
+          )}
+        </div>
 
-      <button
-        type="submit"
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-md transition"
-      >
-        Sign In
-      </button>
-    </form>
+        <button
+          type="submit"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-md transition"
+        >
+          Sign In
+        </button>
+      </form>
+    </FormProvider>
   )
 }
